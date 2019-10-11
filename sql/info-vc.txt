@@ -1,0 +1,25 @@
+дамп
+pg_dump -f vc-2019-09-07.dump -p 5432 -h localhost -U postgres vc
+
+https://o7planning.org/ru/11705/create-a-login-application-with-spring-boot-spring-security-jpa
+
+создание базы
+CREATE DATABASE vc ENCODING='UTF8' CONNECTION LIMIT=-1;
+
+--users
+create table IF NOT EXISTS users(id_user bigserial PRIMARY KEY, surname varchar(256), name varchar(256), birthday date, phone bigint, email varchar(256), password varchar(256), is_deleted boolean DEFAULT 'f', registration_date timestamp without time zone DEFAULT NOW());
+
+insert into users(surname, name, birthday, phone, email, password) values ('Пупкин', 'Василий', '1980-05-01', 79211234567, 'vpupkin', '$2a$10$1RS/LcSkvdtXlFYNEbVUQeEUE.YC/te3cQCmWWclsKyTX3/VrDKnq');
+insert into users(surname, name, birthday, phone, email, password) values ('Иванов', 'Михаил', '1983-12-31', 79211234560, 'misha', '$2a$10$Khv/H/62TUmXdvcU81l27ecA9Gwy7TY.X3O1eJBzsQto4ckLM8DFe');
+
+--roles
+create table IF NOT EXISTS roles(id_role int PRIMARY KEY, role_name varchar(20));
+insert into roles(id_role, role_name) values (1, 'ROLE_USER');
+
+--users_roles
+create table users_roles(id_user bigint, id_role int);
+ALTER TABLE users_roles ADD CONSTRAINT fk_user FOREIGN KEY (id_user) REFERENCES users(id_user);
+ALTER TABLE users_roles ADD CONSTRAINT fk_role FOREIGN KEY (id_role) REFERENCES roles(id_role);
+insert into users_roles(id_user, id_role) values (1, 1);
+insert into users_roles(id_user, id_role) values (2, 1);
+
