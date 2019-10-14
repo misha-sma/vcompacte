@@ -3,13 +3,12 @@ package vc.service;
 import java.util.ArrayList;
 import java.util.List;
  
-import vc.dao.AppUserDAO;
-import vc.entity.AppUser;
-import vc.dao.AppRoleDAO;
+import vc.dao.UserDao;
+import vc.entity.User;
+import vc.dao.RoleDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,24 +18,24 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl implements UserDetailsService {
  
     @Autowired
-    private AppUserDAO appUserDAO;
+    private UserDao userDAO;
  
     @Autowired
-    private AppRoleDAO appRoleDAO;
+    private RoleDao roleDAO;
  
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        AppUser appUser = this.appUserDAO.findUserAccount(userName);
+        User user = userDAO.getUserByEmail(userName);
  
-        if (appUser == null) {
+        if (user == null) {
             System.out.println("User not found! " + userName);
             throw new UsernameNotFoundException("User " + userName + " was not found in the database");
         }
  
-        System.out.println("Found User: " + appUser);
+        System.out.println("Found User: " + user);
  
         // [ROLE_USER, ROLE_ADMIN,..]
-        List<String> roleNames = this.appRoleDAO.getRoleNames(appUser.getUserId());
+        List<String> roleNames = roleDAO.getRoleNames(user.getIdUser());
  
         List<GrantedAuthority> grantList = new ArrayList<GrantedAuthority>();
         if (roleNames != null) {
@@ -47,8 +46,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             }
         }
  
-        UserDetails userDetails = (UserDetails) new User(appUser.getUserName(), //
-                appUser.getEncrytedPassword(), grantList);
+        UserDetails userDetails = (UserDetails) new org.springframework.security.core.userdetails.User(userName, 
+                user.getPassword(), grantList);
  
         return userDetails;
     }

@@ -23,3 +23,5 @@ ALTER TABLE users_roles ADD CONSTRAINT fk_role FOREIGN KEY (id_role) REFERENCES 
 insert into users_roles(id_user, id_role) values (1, 1);
 insert into users_roles(id_user, id_role) values (2, 1);
 
+alter table users_roles add column id_user_role bigserial primary key;
+
