@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
    <head>
-      <title>Login</title>
+      <title>Create Account</title>
    </head>
    <body>
-      <h1>Login</h1>
+      <h1>Create Account</h1>
        
       <!-- /login?error=true -->
       <div th:if="${#request.getParameter('error') == 'true'}"
@@ -19,7 +19,7 @@
       </div>
       
       <h3>Enter email and password:</h3>
-      <form name='f' th:action="@{/j_spring_security_check}" method='POST'>
+      <form name='f' th:action="@{/create_account}" method='POST'>
          <table>
             <tr>
                <td>Email:</td>
@@ -30,14 +30,17 @@
                <td><input type='password' name='password' /></td>
             </tr>
             <tr>
+               <td>Confirm Password:</td>
+               <td><input type='password' name='password2' /></td>
+            </tr>
+            <tr>
                <td>Remember Me?</td>
                <td><input type="checkbox" name="remember-me" /></td>
             </tr>            
             <tr>
-               <td><input name="submit" type="submit" value="Login" /></td>
+               <td><input name="submit" type="submit" value="Register" /></td>
             </tr>
          </table>
       </form>
-      <a href="/register">Create account</a>
    </body>
 </html>

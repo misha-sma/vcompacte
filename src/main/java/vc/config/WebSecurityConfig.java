@@ -32,25 +32,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
  
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
- 
         // Setting Service to find User in the database.
         // And Setting PassswordEncoder
         auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
- 
     }
  
     @Override
     protected void configure(HttpSecurity http) throws Exception {
- 
         http.csrf().disable();
  
         // The pages does not require login
-        http.authorizeRequests().antMatchers("/", "/login", "/logout", "/error").permitAll();
+        http.authorizeRequests().antMatchers("/", "/login", "/logout", "/error", "/register", "/create_account").permitAll();
  
-        // /userInfo page requires login as ROLE_USER or ROLE_ADMIN.
+        // /userInfo page requires login as ROLE_USER.
         // If no login, it will redirect to /login page.
-        http.authorizeRequests().antMatchers("/userInfo").access("hasAnyRole('ROLE_USER')");
-        http.authorizeRequests().antMatchers("/user").access("hasAnyRole('ROLE_USER')");
+        http.authorizeRequests().antMatchers("/userInfo", "/user").access("hasAnyRole('ROLE_USER')");
+      //  http.authorizeRequests().antMatchers("/user").access("hasAnyRole('ROLE_USER')");
  
         // For ADMIN only.
        // http.authorizeRequests().antMatchers("/admin").access("hasRole('ROLE_ADMIN')");
@@ -76,8 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // Config Remember Me.
         http.authorizeRequests().and() //
                 .rememberMe().tokenRepository(this.persistentTokenRepository()) //
-                .tokenValiditySeconds(1 * 24 * 60 * 60); // 24h
- 
+                .tokenValiditySeconds(24 * 60 * 60); // 24h
     }
  
     @Bean
