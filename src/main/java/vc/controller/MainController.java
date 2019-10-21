@@ -2,8 +2,10 @@ package vc.controller;
 
 import java.security.Principal;
 
+import vc.dao.RoleDao;
 import vc.dao.UserDao;
 import vc.entity.User;
+import vc.utils.EncrytedPasswordUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,9 @@ public class MainController {
 
 	@Autowired
 	private UserDao userDao;
+
+	@Autowired
+	private RoleDao roleDao;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String welcomePage(Model model, Principal principal) {
@@ -93,7 +98,10 @@ public class MainController {
 		User user = userDao.getUserByEmail(email);
 		if (user == null) {
 			// создание юзера
-			return null;
+			long idUser = userDao.addUser(email, EncrytedPasswordUtils.encrytePassword(password));
+			logger.info("Create user idUser=" + idUser + " email=" + email);
+			roleDao.addUserRole(idUser);
+			return new ResponseEntity<String>("<html><body>Registration successfull!!!</body></html>", HttpStatus.OK);
 		} else {
 			return new ResponseEntity<String>("<html><body>Email already used</body></html>", HttpStatus.OK);
 		}

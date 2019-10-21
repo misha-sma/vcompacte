@@ -1,5 +1,7 @@
 package vc.dao;
 
+import java.math.BigInteger;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
@@ -19,6 +21,7 @@ public class UserDao {
 
 	public static final String USER_BY_EMAIL_SQL = "SELECT e FROM " + User.class.getName() + " e "
 			+ " WHERE e.email = :email";
+	public static final String INSERT_USER_SQL = "INSERT INTO users(email, password) VALUES(?, ?) RETURNING id_user";
 
 	@Autowired
 	private EntityManager entityManager;
@@ -40,5 +43,10 @@ public class UserDao {
 			logger.error(e.getMessage(), e);
 			return null;
 		}
+	}
+
+	public long addUser(String email, String password) {
+		return ((BigInteger) entityManager.createNativeQuery(INSERT_USER_SQL).setParameter(1, email)
+				.setParameter(2, password).getSingleResult()).longValueExact();
 	}
 }

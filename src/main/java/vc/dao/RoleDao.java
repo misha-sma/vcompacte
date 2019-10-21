@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RoleDao {
 	public static final String ROLE_NAMES_SQL = "SELECT ur.role.roleName FROM " + UserRole.class.getName() + " ur "
 			+ " WHERE ur.user.idUser = :idUser";
+	public static final String INSERT_USER_ROLE_SQL = "INSERT INTO users_roles(id_user, id_role) VALUES(?, 1)";
 
 	@Autowired
 	private EntityManager entityManager;
@@ -25,4 +26,7 @@ public class RoleDao {
 		return query.getResultList();
 	}
 
+	public void addUserRole(long idUser) {
+		entityManager.createNativeQuery(INSERT_USER_ROLE_SQL).setParameter(1, idUser).executeUpdate();
+	}
 }
