@@ -25,3 +25,4 @@ insert into users_roles(id_user, id_role) values (2, 1);
 
 alter table users_roles add column id_user_role bigserial primary key;
 
+server.servlet.session.timeout=2m

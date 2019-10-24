@@ -5,6 +5,8 @@ import java.security.Principal;
 import vc.dao.RoleDao;
 import vc.dao.UserDao;
 import vc.entity.User;
+import vc.model.OnlineUsers;
+import vc.renderer.UserPageRenderer;
 import vc.utils.EncrytedPasswordUtils;
 
 import org.slf4j.Logger;
@@ -110,13 +112,11 @@ public class MainController {
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
 	public ResponseEntity<String> userPage(@RequestParam Long id, Principal principal) {
 		String userName = principal.getName().toLowerCase();
+		OnlineUsers.addUser(userName);
 		User user = userDao.getUserByEmail(userName);
-		if (user.getIdUser().equals(id)) {
-			return new ResponseEntity<String>("<html><body>" + user.getEmail() + " owner Page</body></html>",
-					HttpStatus.OK);
-		}
 		User user2 = userDao.getUserById(id);
-		return new ResponseEntity<String>("<html><body>" + user2.getEmail() + " Page</body></html>", HttpStatus.OK);
+		String html = UserPageRenderer.renderUserPage(user2, user.getIdUser().equals(id));
+		return new ResponseEntity<String>(html, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/403", method = RequestMethod.GET)
