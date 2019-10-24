@@ -26,3 +26,5 @@ insert into users_roles(id_user, id_role) values (2, 1);
 alter table users_roles add column id_user_role bigserial primary key;
 
 server.servlet.session.timeout=2m
+
+create table IF NOT EXISTS persistent_logins(username varchar(256) not null, series varchar(64) not null primary key, token varchar(64) not null, last_used timestamp without time zone not null);
