@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+   <head>
+      <title>Add User Info</title>
+   </head>
+   <body>
+      <h1>Добавьте информацию о себе</h1>
+      <form name='f' th:action="@{/save_user_info}" method='POST'>
+         <table>
+            <tr>
+               <td>Имя:</td>
+               <td><input type='text' name='name' /></td>
+            </tr>
+            <tr>
+               <td>Фамилия:</td>
+               <td><input type='text' name='surname' /></td>
+            </tr>
+            <tr>
+               <td>Телефон:</td>
+               <td><input type='text' name='phone' /></td>
+            </tr>
+            <tr>
+               <td>Дата рождения:</td>
+               <td><input type='date' name='birthday' /></td>
+            </tr>
+            <tr>
+               <td><input name="submit" type="submit" value="Сохранить" /></td>
+            </tr>
+         </table>
+      </form>
+   </body>
+</html>

@@ -22,6 +22,7 @@ public class UserDao {
 	public static final String USER_BY_EMAIL_SQL = "SELECT e FROM " + User.class.getName() + " e "
 			+ " WHERE e.email = :email";
 	public static final String INSERT_USER_SQL = "INSERT INTO users(email, password) VALUES(?, ?) RETURNING id_user";
+	public static final String UPDATE_USER_SQL = "UPDATE users SET name=?, surname=?, birthday=?, phone=? WHERE id_user=?";
 
 	@Autowired
 	private EntityManager entityManager;
@@ -49,4 +50,11 @@ public class UserDao {
 		return ((BigInteger) entityManager.createNativeQuery(INSERT_USER_SQL).setParameter(1, email)
 				.setParameter(2, password).getSingleResult()).longValueExact();
 	}
+
+	public void updateUser(User user) {
+		entityManager.createNativeQuery(UPDATE_USER_SQL).setParameter(1, user.getName())
+				.setParameter(2, user.getSurname()).setParameter(3, user.getBirthday()).setParameter(4, user.getPhone())
+				.setParameter(5, user.getIdUser()).executeUpdate();
+	}
+
 }

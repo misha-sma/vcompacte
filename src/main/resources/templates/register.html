@@ -4,7 +4,7 @@
       <title>Create Account</title>
    </head>
    <body>
-      <h1>Create Account</h1>
+      <h1>Создать аккаунт</h1>
        
       <!-- /login?error=true -->
       <div th:if="${#request.getParameter('error') == 'true'}"
@@ -18,7 +18,7 @@
             
       </div>
       
-      <h3>Enter email and password:</h3>
+      <h3>Введите email и пароль:</h3>
       <form name='f' th:action="@{/create_account}" method='POST'>
          <table>
             <tr>
@@ -26,19 +26,15 @@
                <td><input type='text' name='email' value=''></td>
             </tr>
             <tr>
-               <td>Password:</td>
+               <td>Пароль:</td>
                <td><input type='password' name='password' /></td>
             </tr>
             <tr>
-               <td>Confirm Password:</td>
+               <td>Подтвердите пароль:</td>
                <td><input type='password' name='password2' /></td>
             </tr>
             <tr>
-               <td>Remember Me?</td>
-               <td><input type="checkbox" name="remember-me" /></td>
-            </tr>            
-            <tr>
-               <td><input name="submit" type="submit" value="Register" /></td>
+               <td><input name="submit" type="submit" value="Создать" /></td>
             </tr>
          </table>
       </form>

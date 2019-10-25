@@ -7,6 +7,7 @@ import vc.dao.UserDao;
 import vc.entity.User;
 import vc.model.OnlineUsers;
 import vc.renderer.UserPageRenderer;
+import vc.utils.DateUtil;
 import vc.utils.EncrytedPasswordUtils;
 
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ public class MainController {
 	private RoleDao roleDao;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String welcomePage(Model model, Principal principal) {
+	public String welcomePage(Principal principal) {
 		if (principal == null) {
 			return "loginPage";
 		}
@@ -41,13 +42,8 @@ public class MainController {
 		return "redirect:/user?id=" + user.getIdUser();
 	}
 
-	@RequestMapping(value = "/error", method = RequestMethod.GET)
-	public ResponseEntity<String> errorPage(Model model) {
-		return new ResponseEntity<String>("<html><body>Error page 500</body></html>", HttpStatus.OK);
-	}
-
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String loginPage(Model model) {
+	public String loginPage() {
 		return "loginPage";
 	}
 
@@ -58,7 +54,7 @@ public class MainController {
 	}
 
 	@RequestMapping(value = "/userInfo", method = RequestMethod.GET)
-	public String userInfo(Model model, Principal principal) {
+	public String userInfo(Principal principal) {
 		// After user login successfully.
 		String userName = principal.getName().toLowerCase();
 		User user = userDao.getUserByEmail(userName);
@@ -67,7 +63,7 @@ public class MainController {
 	}
 
 	@RequestMapping(value = "/register", method = RequestMethod.GET)
-	public String createAccount(Model model, Principal principal) {
+	public String createAccount(Principal principal) {
 		if (principal == null) {
 			return "register";
 		}
@@ -87,14 +83,14 @@ public class MainController {
 			return new ResponseEntity<String>(headers, HttpStatus.FOUND);
 		}
 		if (password == null || password.length() < 8) {
-			return new ResponseEntity<String>("<html><body>Password must has at least 8 symbols</body></html>",
-					HttpStatus.OK);
+			return new ResponseEntity<String>(
+					"<html><body>Пароль должен состоять как минимум из 8 символов</body></html>", HttpStatus.OK);
 		}
 		if (!password.equals(password2)) {
-			return new ResponseEntity<String>("<html><body>Passwords not equals</body></html>", HttpStatus.OK);
+			return new ResponseEntity<String>("<html><body>Пароли не совпадают</body></html>", HttpStatus.OK);
 		}
 		if (email == null || email.isEmpty()) {
-			return new ResponseEntity<String>("<html><body>Email not valid</body></html>", HttpStatus.OK);
+			return new ResponseEntity<String>("<html><body>Email невалидный</body></html>", HttpStatus.OK);
 		}
 		email = email.toLowerCase();
 		User user = userDao.getUserByEmail(email);
@@ -103,9 +99,11 @@ public class MainController {
 			long idUser = userDao.addUser(email, EncrytedPasswordUtils.encrytePassword(password));
 			logger.info("Create user idUser=" + idUser + " email=" + email);
 			roleDao.addUserRole(idUser);
-			return new ResponseEntity<String>("<html><body>Registration successfull!!!</body></html>", HttpStatus.OK);
+			return new ResponseEntity<String>(
+					"<html><body>Вы успешно зарегистрировались!!!<br><a href=\"/login\">Войти</a></body></html>",
+					HttpStatus.OK);
 		} else {
-			return new ResponseEntity<String>("<html><body>Email already used</body></html>", HttpStatus.OK);
+			return new ResponseEntity<String>("<html><body>Email уже занят</body></html>", HttpStatus.OK);
 		}
 	}
 
@@ -114,9 +112,39 @@ public class MainController {
 		String userName = principal.getName().toLowerCase();
 		OnlineUsers.addUser(userName);
 		User user = userDao.getUserByEmail(userName);
+		if (user.getName() == null || user.getName().isEmpty() || user.getSurname() == null
+				|| user.getSurname().isEmpty()) {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Location", "/add_user_info");
+			return new ResponseEntity<String>(headers, HttpStatus.FOUND);
+		}
 		User user2 = userDao.getUserById(id);
 		String html = UserPageRenderer.renderUserPage(user2, user.getIdUser().equals(id));
 		return new ResponseEntity<String>(html, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/add_user_info", method = RequestMethod.GET)
+	public String addUserInfo(Principal principal) {
+		String userName = principal.getName().toLowerCase();
+		User user = userDao.getUserByEmail(userName);
+		if (user.getName() != null && !user.getName().isEmpty() && user.getSurname() != null
+				&& !user.getSurname().isEmpty()) {
+			return "redirect:/user?id=" + user.getIdUser();
+		}
+		return "addUserInfo";
+	}
+
+	@RequestMapping(value = "/save_user_info", method = RequestMethod.POST)
+	public String createAccount2(@RequestParam String name, @RequestParam String surname, @RequestParam String phone,
+			@RequestParam String birthday, Principal principal) {
+		String userName = principal.getName().toLowerCase();
+		User user = userDao.getUserByEmail(userName);
+		user.setName(name.trim());
+		user.setSurname(surname.trim());
+		user.setPhone(Long.parseLong(phone.trim().replace("+", "")));
+		user.setBirthday(DateUtil.string2Date(birthday));
+		userDao.updateUser(user);
+		return "redirect:/user?id=" + user.getIdUser();
 	}
 
 	@RequestMapping(value = "/403", method = RequestMethod.GET)
