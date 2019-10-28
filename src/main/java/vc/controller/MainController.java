@@ -37,7 +37,7 @@ public class MainController {
 		if (principal == null) {
 			return "loginPage";
 		}
-		String userName = principal.getName().toLowerCase();
+		String userName = principal.getName();
 		User user = userDao.getUserByEmail(userName);
 		return "redirect:/user?id=" + user.getIdUser();
 	}
@@ -56,7 +56,7 @@ public class MainController {
 	@RequestMapping(value = "/userInfo", method = RequestMethod.GET)
 	public String userInfo(Principal principal) {
 		// After user login successfully.
-		String userName = principal.getName().toLowerCase();
+		String userName = principal.getName();
 		User user = userDao.getUserByEmail(userName);
 		logger.info("User Name: " + userName);
 		return "redirect:/user?id=" + user.getIdUser();
@@ -67,7 +67,7 @@ public class MainController {
 		if (principal == null) {
 			return "register";
 		}
-		String userName = principal.getName().toLowerCase();
+		String userName = principal.getName();
 		User user = userDao.getUserByEmail(userName);
 		return "redirect:/user?id=" + user.getIdUser();
 	}
@@ -76,7 +76,7 @@ public class MainController {
 	public ResponseEntity<String> createAccount2(@RequestParam String email, @RequestParam String password,
 			@RequestParam String password2, Principal principal) {
 		if (principal != null) {
-			String userName = principal.getName().toLowerCase();
+			String userName = principal.getName();
 			User user = userDao.getUserByEmail(userName);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Location", "/user?id=" + user.getIdUser());
@@ -109,7 +109,7 @@ public class MainController {
 
 	@RequestMapping(value = "/user", method = RequestMethod.GET)
 	public ResponseEntity<String> userPage(@RequestParam Long id, Principal principal) {
-		String userName = principal.getName().toLowerCase();
+		String userName = principal.getName();
 		OnlineUsers.addUser(userName);
 		User user = userDao.getUserByEmail(userName);
 		if (user.getName() == null || user.getName().isEmpty() || user.getSurname() == null
@@ -125,7 +125,7 @@ public class MainController {
 
 	@RequestMapping(value = "/add_user_info", method = RequestMethod.GET)
 	public String addUserInfo(Principal principal) {
-		String userName = principal.getName().toLowerCase();
+		String userName = principal.getName();
 		User user = userDao.getUserByEmail(userName);
 		if (user.getName() != null && !user.getName().isEmpty() && user.getSurname() != null
 				&& !user.getSurname().isEmpty()) {
@@ -137,7 +137,7 @@ public class MainController {
 	@RequestMapping(value = "/save_user_info", method = RequestMethod.POST)
 	public String createAccount2(@RequestParam String name, @RequestParam String surname, @RequestParam String phone,
 			@RequestParam String birthday, Principal principal) {
-		String userName = principal.getName().toLowerCase();
+		String userName = principal.getName();
 		User user = userDao.getUserByEmail(userName);
 		user.setName(name.trim());
 		user.setSurname(surname.trim());
@@ -150,7 +150,7 @@ public class MainController {
 	@RequestMapping(value = "/403", method = RequestMethod.GET)
 	public String accessDenied(Model model, Principal principal) {
 		if (principal != null) {
-			String userName = principal.getName().toLowerCase();
+			String userName = principal.getName();
 			model.addAttribute("userInfo", userName);
 			String message = "Hi " + userName + "<br> You do not have permission to access this page!";
 			model.addAttribute("message", message);
