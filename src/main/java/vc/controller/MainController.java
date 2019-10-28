@@ -103,7 +103,7 @@ public class MainController {
 					"<html><body>Вы успешно зарегистрировались!!!<br><a href=\"/login\">Войти</a></body></html>",
 					HttpStatus.OK);
 		} else {
-			return new ResponseEntity<String>("<html><body>Email уже занят</body></html>", HttpStatus.OK);
+			return new ResponseEntity<String>("<html><body>Этот email уже занят</body></html>", HttpStatus.OK);
 		}
 	}
 
@@ -119,7 +119,7 @@ public class MainController {
 			return new ResponseEntity<String>(headers, HttpStatus.FOUND);
 		}
 		User user2 = userDao.getUserById(id);
-		String html = UserPageRenderer.renderUserPage(user2, user.getIdUser().equals(id));
+		String html = UserPageRenderer.renderUserPage(user2, user.getIdUser().equals(id), user.getIdUser());
 		return new ResponseEntity<String>(html, HttpStatus.OK);
 	}
 
