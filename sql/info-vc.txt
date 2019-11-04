@@ -28,3 +28,25 @@ alter table users_roles add column id_user_role bigserial primary key;
 server.servlet.session.timeout=2m
 
 create table IF NOT EXISTS persistent_logins(username varchar(256) not null, series varchar(64) not null primary key, token varchar(64) not null, last_used timestamp without time zone not null);
+
+--friends
+vc=# create table IF NOT EXISTS friends(id_friend bigserial primary key, id_user_1 bigint, id_user_2 bigint, is_new boolean);
+CREATE TABLE
+vc=# ALTER TABLE friends ADD CONSTRAINT fk_user_1 FOREIGN KEY (id_user_1) REFERENCES users(id_user);
+ALTER TABLE
+vc=# ALTER TABLE friends ADD CONSTRAINT fk_user_2 FOREIGN KEY (id_user_2) REFERENCES users(id_user);
+
+--селект на айдишники друзей
+select f1.id_user_2 from friends as f1 inner join friends as f2 on f1.id_user_1=1 and f1.id_user_2=f2.id_user_1 and f2.id_user_2=1;
+
+--селект айдишников тех людей на которых человек подписан
+select id_user_2 from (select f1.id_user_2, f2.id_user_1 from (select id_user_2 from friends where id_user_1=1) as f1 left join friends as f2 on f1.id_user_2=f2.id_user_1 and f2.id_user_2=1) as t where t.id_user_1 is null;
+
+--селект айдишников людей которые подписаны на данного человека
+select id_user_1 from (select * from (select id_user_2 from friends where id_user_1=1) as f1 right join (select id_user_1 from friends where id_user_2=1) as f2 on f1.id_user_2=f2.id_user_1) as t where t.id_user_2 is null;
+
+
+
+
+
+
